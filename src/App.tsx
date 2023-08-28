@@ -2,6 +2,7 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import AntTable from './components/AntTable';
 import AntImage from './components/AntImage';
+import AntInputSearch from './components/AntInputSearch';
 import { IPhoto } from './types';
 
 // TODO: put columns in their own config file
@@ -32,6 +33,7 @@ const columns = [
 
 function App() {
   const [photos, setPhotos] = useState<IPhoto[]>();
+  const [filteredPhotos, setFilteredPhotos] = useState<IPhoto[]>();
 
   useEffect(() => {
     async function fetchData() {
@@ -48,6 +50,7 @@ function App() {
         const data = await response.json();
 
         setPhotos(data);
+        setFilteredPhotos(data);
       } catch (error) {
         // TODO: handle error with message to the user
         console.error('Error fetching photos -', error);
@@ -57,9 +60,24 @@ function App() {
     fetchData();
   }, []);
 
+  const handleFilter = (searchInput: string) => {
+    if (!searchInput) {
+      setFilteredPhotos(photos);
+    } else {
+      const filtered = photos?.filter((photo) =>
+        photo.title.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      setFilteredPhotos(filtered);
+    }
+  };
+
   return (
     <div className="App">
-      <AntTable data={photos} columns={columns} />
+      <AntInputSearch
+        handleSearch={handleFilter}
+        placeholder="Search items here"
+      />
+      <AntTable data={filteredPhotos} columns={columns} />
     </div>
   );
 }
