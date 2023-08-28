@@ -3,37 +3,46 @@ import { useEffect, useState } from 'react';
 import AntTable from './components/AntTable';
 import AntImage from './components/AntImage';
 import AntInputSearch from './components/AntInputSearch';
+import { Button } from 'antd';
 import { IPhoto } from './types';
-
-// TODO: put columns in their own config file
-const columns = [
-  {
-    title: 'Id',
-    dataIndex: 'id',
-    key: 'id',
-  },
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
-  },
-  {
-    title: 'Url',
-    dataIndex: 'url',
-    key: 'url',
-    render: (url: string) => <AntImage width={100} height={100} src={url} />,
-  },
-  {
-    title: 'Thumbnail',
-    dataIndex: 'thumbnailUrl',
-    key: 'thumbnailUrl',
-    render: (url: string) => <AntImage width={100} height={100} src={url} />,
-  },
-];
 
 function App() {
   const [photos, setPhotos] = useState<IPhoto[]>();
   const [filteredPhotos, setFilteredPhotos] = useState<IPhoto[]>();
+
+  // TODO: put columns in their own config file
+  const columns = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Url',
+      dataIndex: 'url',
+      key: 'url',
+      render: (url: string) => <AntImage width={100} height={100} src={url} />,
+    },
+    {
+      title: 'Thumbnail',
+      dataIndex: 'thumbnailUrl',
+      key: 'thumbnailUrl',
+      render: (url: string) => <AntImage width={100} height={100} src={url} />,
+    },
+    {
+      title: 'Remove Title',
+      dataIndex: 'id',
+      key: 'remove',
+      render: (_: any, { id }: { id: number }) => (
+        <Button onClick={() => handleRemoveTitle(id)}>Remove Title</Button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     async function fetchData() {
@@ -69,6 +78,17 @@ function App() {
       );
       setFilteredPhotos(filtered);
     }
+  };
+
+  const handleRemoveTitle = (id: number) => {
+    const updatedAllPhotos = photos?.map((photo) => {
+      if (photo.id === id) {
+        return { ...photo, title: '' };
+      }
+      return photo;
+    });
+    setPhotos(updatedAllPhotos);
+    setFilteredPhotos(updatedAllPhotos);
   };
 
   return (
