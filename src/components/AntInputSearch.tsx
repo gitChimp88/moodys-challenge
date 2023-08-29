@@ -1,7 +1,8 @@
+import { ChangeEvent } from 'react';
 import { Input } from 'antd';
 
 interface IAntInputSearch {
-  handleSearch: (x: any) => void;
+  handleSearch: (x: string) => void;
   placeholder: string;
 }
 
@@ -10,7 +11,9 @@ function AntInputSearch({ handleSearch, placeholder }: IAntInputSearch) {
     <Input
       allowClear
       placeholder={placeholder}
-      onChange={(e: any) => handleSearch(e.target.value)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+        handleSearch(e.target.value)
+      }
     />
   );
 }

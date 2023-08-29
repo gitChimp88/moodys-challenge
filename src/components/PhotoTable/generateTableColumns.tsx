@@ -1,7 +1,9 @@
 import AntImage from '../AntImage';
 import { Button } from 'antd';
 
-export const generateTableColumns = (handleRemoveTitle: any) => {
+export const generateTableColumns = (
+  handleRemoveTitle: (id: number) => void
+) => {
   return [
     {
       title: 'Id',
