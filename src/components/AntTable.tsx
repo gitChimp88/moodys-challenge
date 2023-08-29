@@ -13,10 +13,11 @@ interface IDataItem {
 interface IAntTable {
   data?: IDataItem[];
   columns: IColumnItem[];
+  rowKey: string;
 }
 
-function AntTable({ data, columns }: IAntTable) {
-  return <Table dataSource={data} columns={columns} />;
+function AntTable({ data, columns, rowKey }: IAntTable) {
+  return <Table dataSource={data} columns={columns} rowKey={rowKey} />;
 }
 
 export default AntTable;

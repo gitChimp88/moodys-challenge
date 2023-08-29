@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import AntTable from '../AntTable';
 import AntInputSearch from '../AntInputSearch';
 import { Spin } from 'antd';
 import { IPhoto } from '../../types';
 import { filterByMatchingText } from '../../utils';
+import { fetchData } from '../../utils/api';
 import { generateTableColumns } from './generateTableColumns';
 
 function PhotoTable() {
@@ -11,18 +12,11 @@ function PhotoTable() {
   const [filteredPhotos, setFilteredPhotos] = useState<IPhoto[]>();
 
   useEffect(() => {
-    async function fetchData() {
-      // TODO: make a generic fetch call function
+    async function fetchPhotos() {
       try {
-        const response = await fetch(
+        const data: IPhoto[] = await fetchData(
           'https://jsonplaceholder.typicode.com/photos'
         );
-
-        if (!response) {
-          throw new Error('Error with network');
-        }
-
-        const data = await response.json();
 
         // create fake projects here to test limits
         // const fakeData: any = [];
@@ -44,7 +38,7 @@ function PhotoTable() {
       }
     }
 
-    fetchData();
+    fetchPhotos();
   }, []);
 
   const handleFilter = useCallback(
@@ -69,30 +63,38 @@ function PhotoTable() {
     [photos]
   );
 
-  const handleRemoveTitle = (id: number) => {
-    // remove title from source data
-    const updatedAllPhotos = photos?.map((photo) => {
-      if (photo.id === id) {
-        return { ...photo, title: '' };
-      }
-      return photo;
-    });
+  const handleRemoveTitle = useCallback(
+    (id: number) => {
+      // remove title from source data
+      const updatedAllPhotos = photos?.map((photo) => {
+        if (photo.id === id) {
+          return { ...photo, title: '' };
+        }
+        return photo;
+      });
 
-    // update filtered seperately so if user removes title whilst filtering it keeps current order
-    const updatedFiltered = filteredPhotos?.map((photo) => {
-      if (photo.id === id) {
-        return { ...photo, title: '' };
-      }
-      return photo;
-    });
+      // update filtered seperately so if user removes title whilst filtering it keeps current order
+      const updatedFiltered = filteredPhotos?.map((photo) => {
+        if (photo.id === id) {
+          return { ...photo, title: '' };
+        }
+        return photo;
+      });
 
-    setPhotos(updatedAllPhotos);
-    setFilteredPhotos(updatedFiltered);
-  };
+      setPhotos(updatedAllPhotos);
+      setFilteredPhotos(updatedFiltered);
+    },
+    [filteredPhotos, photos]
+  );
+
+  const memoizedColumns = useMemo(
+    () => generateTableColumns(handleRemoveTitle),
+    [handleRemoveTitle]
+  );
 
   if (!filteredPhotos) {
     return (
-      <div className="App">
+      <div className="App" data-testid="app-container">
         <Spin size="large" />
       </div>
     );
@@ -103,10 +105,13 @@ function PhotoTable() {
       <AntInputSearch
         handleSearch={handleFilter}
         placeholder="Search items here"
+        styles={{ marginBottom: 16 }}
       />
       <AntTable
         data={filteredPhotos}
-        columns={generateTableColumns(handleRemoveTitle)}
+        columns={memoizedColumns}
+        rowKey={'id'}
+        data-testid="ant-table"
       />
     </div>
   );

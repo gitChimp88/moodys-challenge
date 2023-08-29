@@ -14,3 +14,4 @@ That way we keep the large amount of data off of the client while still having a
 
 I have also abstracted the filter so it can be used in other parts of the code and put a placeholder for images so a blank box isn't shown while they are loading.
 The filter function is wrapped with useCallback to prevent recreation of the function on every render seeing as it is passed as a prop to search component.
+The generation of columns is memoized as it can reuse the columns unless it's dependency changes.
