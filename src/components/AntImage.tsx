@@ -1,4 +1,4 @@
-import { Image } from 'antd';
+import { Image, Skeleton } from 'antd';
 
 interface IAntImage {
   width: number;
@@ -7,7 +7,14 @@ interface IAntImage {
 }
 
 function AntImage({ width, height, src }: IAntImage) {
-  return <Image width={width} height={height} src={src ?? 'error'} />;
+  return (
+    <Image
+      width={width}
+      height={height}
+      src={src ?? 'error'}
+      placeholder={<Skeleton.Image active={true} />}
+    />
+  );
 }
 
 export default AntImage;
