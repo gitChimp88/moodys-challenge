@@ -19,7 +19,7 @@ describe('filterByMatchingText', () => {
   });
 
   it('is case-insensitive', () => {
-    const filteredData = filterByMatchingText(data, 'photo 2', 'title');
+    const filteredData = filterByMatchingText(data, 'Photo 2', 'title');
     expect(filteredData).toHaveLength(1);
     expect(filteredData[0].id).toBe(2);
   });
